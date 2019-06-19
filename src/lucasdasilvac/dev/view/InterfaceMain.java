@@ -4,28 +4,35 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import lucasdasilvac.dev.controller.EventController;
+import lucasdasilvac.dev.controller.UserController;
 import lucasdasilvac.dev.entity.Event;
+import lucasdasilvac.dev.entity.User;
 
 public class InterfaceMain {
 	Scanner scanner = new Scanner(System.in);
 	EventController eventC = new EventController();
+	UserController userC = new UserController();
 	
 	public void start() throws SQLException {
 		boolean loop = true;
 		while(loop) {
-			System.out.println("menu dos eventos");
+			System.out.println("menu");
 			System.out.println("informe a opção desejada");
 			System.out.println("1. cadastrar evento");
 			System.out.println("2. atualizar evento");
 			System.out.println("3. remover evento");
 			System.out.println("4. procurar evento por id");
-			System.out.println("5. sair");
+			System.out.println("5. cadastrar usuário");
+			System.out.println("6. atualizar usuário");
+			System.out.println("7. deletar usuário");
+			System.out.println("8. procurar usuário por id");
+			System.out.println("9. sair");
 			
 			String option = scanner.nextLine();
-			if(option.matches("^[0-5]{1,}")) {
+			if(option.matches("^[0-9]{1,}")) {
 				int n = Integer.parseInt(option);
-				if(n < 1 || n > 5) {
-					System.out.println("opção inválida, digite somente um número entre 1 e 5");
+				if(n < 1 || n > 9) {
+					System.out.println("opção inválida, digite somente um número entre 1 e 9");
 				} else {
 					switch (n) {
 					case 1:
@@ -41,6 +48,18 @@ public class InterfaceMain {
 						searchEventById();
 						break;
 					case 5:
+						registerUser();
+						break;
+					case 6:
+						updateUser();
+						break;
+					case 7:
+						deleteUser();
+						break;
+					case 8:
+						serchUserById();
+						break;
+					case 9:
 						System.out.println("sistema encerrado");
 						loop = false;
 						break;
@@ -51,6 +70,145 @@ public class InterfaceMain {
 				System.out.println("digite somente números inteiros");
 			}
 		}
+	}
+
+	private void serchUserById() {
+		System.out.println("procurar usuário por id");
+		System.out.println("digite o id do usuário que deseja procurar");
+		
+		String id_user = scanner.nextLine();
+		if(id_user.equals("")) {
+			System.out.println("código do usuário em branco");
+		} else if(!id_user.matches("^[0-9]{1,}")) {
+			System.out.println("código inválido");
+			return;
+		}
+		
+		Long _id_user = Long.parseLong(id_user);
+		User user = userC.searchUserById(_id_user);
+		
+		if(user == null) {
+			System.out.println("usuário não encontrado");
+		} else {
+			System.out.println("id: " + user.getId() + " nome: " + user.getName() + " email: " +
+					            user.getEmail() + " endereço " + user.getAdress());
+		}
+		
+	}
+
+	private void deleteUser() {
+		System.out.println("deletar usuário");
+		System.out.println("digite o id do usuário que deseja deletar");
+		
+		String id = scanner.nextLine();
+		Long _id = Long.parseLong(id);
+		
+		if(_id <= 0) {
+			System.out.println("digite um id válido");
+			return;
+		}
+		
+		boolean data = userC.deleteUser(_id);
+		
+		if(data) {
+			System.out.println("usuário deletado");
+		} else {
+			System.out.println("ocorreu um erro");
+		}
+		
+	}
+
+	private void updateUser() {
+		System.out.println("atualizar usuário");
+		System.out.println("digite o id do usuário");
+		String id_user = scanner.nextLine();
+		
+		if(id_user.equals("")) {
+			System.out.println("id do usuário em branco");
+			return;
+		} else if(!id_user.matches("^[0-9]{1,}") && (id_user.length() <= 10)) {
+			System.out.println("id do usuário inválido");
+			return;
+		}
+		
+		System.out.println("digite o nome do usuário a ser atualizado");
+		String name = scanner.nextLine();
+		if(name.equals("")) {
+			System.out.println("nome em branco");
+			return;
+		} else if(!name.matches("[a-zA-Z ÁÂÃÀÇÉÊÍÓÔÕÚÜáâãàçéêíóôõúü]*")) {
+			System.out.println("nome só pode conter letras de a-z e A-Z com ou sem acento");
+			return;
+		}
+		
+		System.out.println("digite o email do usuário a ser atualizado");
+		String email = scanner.nextLine();
+		if(email.equals("")) {
+			System.out.println("email em branco");
+			return;
+		} else if(!email.matches("[A-Za-z0-9\\._-]+@[A-Za-z]+\\.[A-Za-z]+")) {
+			System.out.println("o email digitado é inválido");
+			return;
+		}
+		
+		System.out.println("digite o endereço do usuário a ser atualizado");
+		String adress = scanner.nextLine();
+		if(adress.equals("")) {
+			System.out.println("endereço em branco");
+			return;
+		}
+		
+		Long _id_user = Long.parseLong(id_user);
+		boolean data = userC.updateUser(_id_user, name, email, adress);
+		if(data) {
+			System.out.println("usuário atualizado com sucesso");
+		} else {
+			System.out.println("ocorreu um erro");
+		}
+
+	}
+
+	private void registerUser() {
+		
+		
+		System.out.println("cadastrar usuário");
+		System.out.println("digite seu nome");
+		
+		String name = scanner.nextLine();
+		if(name.equals("")) {
+			System.out.println("nome em branco");
+			return;
+		} else if(!name.matches("[a-zA-Z ÁÂÃÀÇÉÊÍÓÔÕÚÜáâãàçéêíóôõúü]*")) {
+			System.out.println("nome pode conter apenas a-z e A-Z com ou sem acento");
+			return;
+		}
+		
+		System.out.println("digite seu email");
+		String email = scanner.nextLine();
+		
+		if(email.equals("")) {
+			System.out.println("email em branco");
+			return;
+		} else if(!email.matches("[A-Za-z0-9\\._-]+@[A-Za-z]+\\.[A-Za-z]+")) {
+			System.out.println("o email digitado é inválido");
+			return;
+		}
+		
+		System.out.println("digite seu endereço");
+		String adress = scanner.nextLine();
+		
+		if(email.equals("")) {
+			System.out.println("endereço em branco");
+			return;
+		}
+		
+		boolean data = userC.registerUser(name, email, adress);
+		if(data) {
+			System.out.println("usuário cadastrado com sucesso");
+		} else {
+			System.out.println("ocorreu um problema");
+		}
+		
 	}
 
 	private void searchEventById() {

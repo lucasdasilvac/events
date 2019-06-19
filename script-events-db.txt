@@ -5,3 +5,20 @@ create table event (
 	attraction varchar(45) not null,
 	constraint event_pkey primary key (id_event)
 );
+
+create table _user (
+	id serial,
+	name varchar(45) not null,
+	email varchar(45) not null unique,
+	adress varchar(45) not null,
+	constraint user_pkey primary key (id)
+);
+
+create table participation (
+	code serial,
+	id_event bigint not null,
+	user_id bigint not null,
+	constraint participation_pkey primary key (code),
+	constraint participation_fkey1 foreign key (id_event) references event(id_event) on delete cascade on update cascade,
+	constraint participation_fkey2 foreign key (user_id) references _user(id) on delete cascade on update cascade
+);
