@@ -1,0 +1,7 @@
+create table event (
+	id_event bigint not null,
+	name varchar(45) not null,
+	adress varchar(45) not null,
+	attraction varchar(45) not null,
+	constraint event_pkey primary key (id_event)
+);
