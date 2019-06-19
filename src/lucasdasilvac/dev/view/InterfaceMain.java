@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import lucasdasilvac.dev.controller.EventController;
+import lucasdasilvac.dev.controller.ParticipationController;
 import lucasdasilvac.dev.controller.UserController;
 import lucasdasilvac.dev.entity.Event;
 import lucasdasilvac.dev.entity.User;
@@ -12,6 +13,7 @@ public class InterfaceMain {
 	Scanner scanner = new Scanner(System.in);
 	EventController eventC = new EventController();
 	UserController userC = new UserController();
+	ParticipationController participationC = new ParticipationController();
 	
 	public void start() throws SQLException {
 		boolean loop = true;
@@ -26,13 +28,14 @@ public class InterfaceMain {
 			System.out.println("6. atualizar usuário");
 			System.out.println("7. deletar usuário");
 			System.out.println("8. procurar usuário por id");
-			System.out.println("9. sair");
+			System.out.println("9. registrar participação do usuário");
+			System.out.println("10. sair");
 			
 			String option = scanner.nextLine();
 			if(option.matches("^[0-9]{1,}")) {
 				int n = Integer.parseInt(option);
-				if(n < 1 || n > 9) {
-					System.out.println("opção inválida, digite somente um número entre 1 e 9");
+				if(n < 1 || n > 10) {
+					System.out.println("opção inválida, digite somente um número entre 1 e 10");
 				} else {
 					switch (n) {
 					case 1:
@@ -60,6 +63,9 @@ public class InterfaceMain {
 						serchUserById();
 						break;
 					case 9:
+						registerParticipation();
+						break;
+					case 10:
 						System.out.println("sistema encerrado");
 						loop = false;
 						break;
@@ -70,6 +76,40 @@ public class InterfaceMain {
 				System.out.println("digite somente números inteiros");
 			}
 		}
+	}
+
+	private void registerParticipation() {
+		System.out.println("registrar participação");
+		System.out.println("digite o id do evento desejado");
+		
+		String id_event = scanner.nextLine();
+		if(id_event.equals("")) {
+			System.out.println("id em branco");
+			return;
+		} else if(!id_event.matches("^[0-9]{1,}") && (id_event.length() < 10)) {
+			System.out.println("o id digitado é inválido");
+			return;
+		}
+		
+		System.out.println("digite o id do usuário");
+		String user_id = scanner.nextLine();
+		if(user_id.equals("")) {
+			System.out.println("código do usuário em branco");
+		} else if(!user_id.matches("^[0-9]{1,}")) {
+			System.out.println("código inválido");
+			return;
+		}
+		
+		Long _id_event = Long.parseLong(id_event);
+		Long _user_id = Long.parseLong(user_id);
+		String code = participationC.registerParticipation(_user_id, _id_event);
+		
+		if(code.matches("^[0-9]{1,}")) {
+			System.out.println("o código da participação é: " + code);
+		} else {
+			System.out.println(code);
+		}
+		
 	}
 
 	private void serchUserById() {
